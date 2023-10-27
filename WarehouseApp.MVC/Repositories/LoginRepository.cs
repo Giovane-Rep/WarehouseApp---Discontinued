@@ -14,7 +14,7 @@ namespace WarehouseApp.MVC.Repositories {
             return Save();
         }
         public Login GetLoginOfAEmployee(int employeeId) {
-            return _context.Employees.Where(e => e.Id == employeeId).Select(l => l.login).FirstOrDefault();
+            return _context.Employees.Where(e => e.Id == employeeId).Select(l => l.Login).FirstOrDefault();
         }
         public ICollection<Login> GetLogins() {
             return _context.Logins.ToList();
