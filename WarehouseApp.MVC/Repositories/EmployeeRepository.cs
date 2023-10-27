@@ -18,6 +18,9 @@ namespace WarehouseApp.MVC.Repositories {
         public ICollection<Employee> GetEmployees() {
             return _context.Employees.ToList();
         }
+        public ICollection<Requisition> GetRequisitionsByEmployee(int employeeId) {
+            return _context.RequisitionEmployees.Where(e => e.EmployeeId == employeeId).Select(r => r.Requisition).ToList();
+        }
         public bool CreateEmployee(Employee employee) {
             _context.Employees.Add(employee);
             return Save();
