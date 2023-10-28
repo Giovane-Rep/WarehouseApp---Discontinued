@@ -1,4 +1,4 @@
-﻿namespace WarehouseApp.Domain.Entities {
+﻿namespace WarehouseApp.MVC.Models {
     public class MaterialCategory {
         public int MaterialId { get; set; }
         public int CategoryId { get; set; }

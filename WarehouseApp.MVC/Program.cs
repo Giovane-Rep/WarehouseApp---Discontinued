@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
-using WarehouseApp.Infra.Data.DataContext;
 using WarehouseApp.MVC;
+using WarehouseApp.MVC.Data;
 using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Repositories;
 

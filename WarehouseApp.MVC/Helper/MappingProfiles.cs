@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using WarehouseApp.Domain.Entities;
 using WarehouseApp.MVC.Dto;
+using WarehouseApp.MVC.Models;
 
 namespace WarehouseApp.MVC.Helper {
     public class MappingProfiles : Profile {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WarehouseApp.Domain.Entities;
+using WarehouseApp.MVC.Models;
 
-namespace WarehouseApp.Infra.Data.DataContext {
+namespace WarehouseApp.MVC.Data {
     public class DataContext : DbContext {
         public DataContext(DbContextOptions<DataContext> options) : base(options) {
         }

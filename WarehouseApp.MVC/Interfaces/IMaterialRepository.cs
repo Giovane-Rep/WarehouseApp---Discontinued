@@ -1,4 +1,4 @@
-﻿using WarehouseApp.Domain.Entities;
+﻿using WarehouseApp.MVC.Models;
 
 namespace WarehouseApp.MVC.Interfaces {
     public interface IMaterialRepository {

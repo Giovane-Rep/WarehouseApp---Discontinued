@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Diagnostics;
-using WarehouseApp.Domain.Entities;
-using WarehouseApp.Infra.Data.DataContext;
+﻿using WarehouseApp.MVC.Data;
 using WarehouseApp.MVC.Interfaces;
+using WarehouseApp.MVC.Models;
 
 namespace WarehouseApp.MVC.Repositories {
     public class RequisitionRepository : IRequisitionRepository {

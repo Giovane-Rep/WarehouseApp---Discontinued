@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using WarehouseApp.Domain.Entities;
 using WarehouseApp.MVC.Dto;
 using WarehouseApp.MVC.Interfaces;
+using WarehouseApp.MVC.Models;
 
 namespace WarehouseApp.MVC.Controllers {
     public class EmployeeController : Controller {
