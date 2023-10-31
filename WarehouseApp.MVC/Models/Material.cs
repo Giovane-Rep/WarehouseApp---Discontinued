@@ -8,7 +8,8 @@
         public DateTime DueDate { get; set; }
         public DateTime EntrieDate { get; set; }
         public DateTime OutputDate { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
         public ICollection<RequisitionMaterial> RequisitionMaterials { get; set; }
-        public ICollection<MaterialCategory> MaterialCategories { get; set; }
     }
 }

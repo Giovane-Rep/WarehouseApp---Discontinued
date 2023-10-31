@@ -53,28 +53,18 @@ namespace WarehouseApp.MVC.Migrations
                     FabricationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EntrieDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OutputDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    OutputDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Materials", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Requisitions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OpeningDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ClosingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Requisitions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Materials_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,7 +75,7 @@ namespace WarehouseApp.MVC.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserLogin = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    EmployeeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,52 +86,30 @@ namespace WarehouseApp.MVC.Migrations
                         principalTable: "Employees",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+
                 });
 
             migrationBuilder.CreateTable(
-                name: "MaterialCategories",
+                name: "Requisitions",
                 columns: table => new
                 {
-                    MaterialId = table.Column<int>(type: "int", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MaterialCategories", x => new { x.MaterialId, x.CategoryId });
-                    table.ForeignKey(
-                        name: "FK_MaterialCategories_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_MaterialCategories_Materials_MaterialId",
-                        column: x => x.MaterialId,
-                        principalTable: "Materials",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RequisitionEmployees",
-                columns: table => new
-                {
-                    RequisitionId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    QuantityRequested = table.Column<int>(type: "int", nullable: false),
+                    OpeningDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClosingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
                     EmployeeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RequisitionEmployees", x => new { x.RequisitionId, x.EmployeeId });
+                    table.PrimaryKey("PK_Requisitions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RequisitionEmployees_Employees_EmployeeId",
+                        name: "FK_Requisitions_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RequisitionEmployees_Requisitions_RequisitionId",
-                        column: x => x.RequisitionId,
-                        principalTable: "Requisitions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -176,19 +144,19 @@ namespace WarehouseApp.MVC.Migrations
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MaterialCategories_CategoryId",
-                table: "MaterialCategories",
+                name: "IX_Materials_CategoryId",
+                table: "Materials",
                 column: "CategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequisitionEmployees_EmployeeId",
-                table: "RequisitionEmployees",
-                column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RequisitionMaterials_MaterialId",
                 table: "RequisitionMaterials",
                 column: "MaterialId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Requisitions_EmployeeId",
+                table: "Requisitions",
+                column: "EmployeeId");
         }
 
         /// <inheritdoc />
@@ -198,25 +166,19 @@ namespace WarehouseApp.MVC.Migrations
                 name: "Logins");
 
             migrationBuilder.DropTable(
-                name: "MaterialCategories");
-
-            migrationBuilder.DropTable(
-                name: "RequisitionEmployees");
-
-            migrationBuilder.DropTable(
                 name: "RequisitionMaterials");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Materials");
 
             migrationBuilder.DropTable(
                 name: "Requisitions");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
         }
     }
 }

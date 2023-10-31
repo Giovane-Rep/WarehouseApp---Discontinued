@@ -5,11 +5,13 @@ using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Models;
 
 namespace WarehouseApp.MVC.Controllers {
+    [Route("api/[controller]")]
+    [ApiController]
     public class EmployeeController : Controller {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
 
-        EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper) {
+        public EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper) {
             _employeeRepository = employeeRepository;
             _mapper = mapper;
         }

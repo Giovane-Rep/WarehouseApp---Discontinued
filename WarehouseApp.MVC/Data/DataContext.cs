@@ -8,28 +8,19 @@ namespace WarehouseApp.MVC.Data {
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Requisition> Requisitions { get; set; }
-        public DbSet<RequisitionEmployee> RequisitionEmployees { get; set; }
         public DbSet<RequisitionMaterial> RequisitionMaterials { get; set; }
         public DbSet<Material> Materials { get; set; }
-        public DbSet<MaterialCategory> MaterialCategories { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Login> Logins { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
 
-            //Relationship between Requisition and Employee 'Many to Many'
-            modelBuilder.Entity<RequisitionEmployee>()
-                .HasKey(re => new { re.RequisitionId, re.EmployeeId });
+            //Relationship between Requisition and Employee 'Meny to One'
 
-            modelBuilder.Entity<RequisitionEmployee>()
-                .HasOne(e => e.Requisition)
-                .WithMany(re => re.RequisitionEmployees)
-                .HasForeignKey(e => e.RequisitionId);
-
-            modelBuilder.Entity<RequisitionEmployee>()
+            modelBuilder.Entity<Requisition>()
                 .HasOne(r => r.Employee)
-                .WithMany(re => re.RequisitionEmployees)
+                .WithMany(e => e.Requisitions)
                 .HasForeignKey(r => r.EmployeeId);
 
             //Relationship between Requisition and Material 'Many to Many'
@@ -46,25 +37,18 @@ namespace WarehouseApp.MVC.Data {
                 .WithMany(rm => rm.RequisitionMaterials)
                 .HasForeignKey(r => r.MaterialId);
 
-            //Relationship between Material and Category 'Many to Many'
-            modelBuilder.Entity<MaterialCategory>()
-                .HasKey(mc => new {mc.MaterialId, mc.CategoryId});
+            //Relationship between Material and Category 'One to Many'
 
-            modelBuilder.Entity<MaterialCategory>()
-                .HasOne(c => c.Material)
-                .WithMany(mc => mc.MaterialCategories)
-                .HasForeignKey(c => c.MaterialId);
-
-            modelBuilder.Entity<MaterialCategory>()
+            modelBuilder.Entity<Material>()
                 .HasOne(m => m.Category)
-                .WithMany(mc => mc.MaterialCategories)
+                .WithMany(c => c.Materials)
                 .HasForeignKey(m => m.CategoryId);
 
-            //Relationship between Employee and Login 'One to Many'
+            //Relationship between Employee and Login 'One to One'
             modelBuilder.Entity<Employee>()
-                .HasMany(e => e.Logins)
+                .HasOne(e => e.Login)
                 .WithOne(l => l.Employee)
-                .HasForeignKey(l => l.EmployeeId); 
+                .HasForeignKey<Login>();
         }
     }
 }

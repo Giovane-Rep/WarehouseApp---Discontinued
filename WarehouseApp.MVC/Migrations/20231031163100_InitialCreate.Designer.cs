@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WarehouseApp.Infra.Data.DataContext;
+using WarehouseApp.MVC.Data;
 
 #nullable disable
 
 namespace WarehouseApp.MVC.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231020145233_InitialCreate")]
+    [Migration("20231031163100_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace WarehouseApp.MVC.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Category", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace WarehouseApp.MVC.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Employee", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -74,15 +74,12 @@ namespace WarehouseApp.MVC.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Login", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Login", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
@@ -100,13 +97,16 @@ namespace WarehouseApp.MVC.Migrations
                     b.ToTable("Logins");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Material", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Material", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -133,25 +133,12 @@ namespace WarehouseApp.MVC.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Materials");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.MaterialCategory", b =>
-                {
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MaterialId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("MaterialCategories");
-                });
-
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Requisition", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Requisition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -169,6 +156,9 @@ namespace WarehouseApp.MVC.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -178,25 +168,12 @@ namespace WarehouseApp.MVC.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EmployeeId");
+
                     b.ToTable("Requisitions");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.RequisitionEmployee", b =>
-                {
-                    b.Property<int>("RequisitionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RequisitionId", "EmployeeId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("RequisitionEmployees");
-                });
-
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.RequisitionMaterial", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.RequisitionMaterial", b =>
                 {
                     b.Property<int>("RequisitionId")
                         .HasColumnType("int");
@@ -211,64 +188,52 @@ namespace WarehouseApp.MVC.Migrations
                     b.ToTable("RequisitionMaterials");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Login", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Login", b =>
                 {
-                    b.HasOne("WarehouseApp.Domain.Entities.Employee", "Employee")
+                    b.HasOne("WarehouseApp.MVC.Models.Employee", null)
                         .WithMany("Logins")
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("EmployeeId");
+
+                    b.HasOne("WarehouseApp.MVC.Models.Employee", "Employee")
+                        .WithOne("Login")
+                        .HasForeignKey("WarehouseApp.MVC.Models.Login", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.MaterialCategory", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Material", b =>
                 {
-                    b.HasOne("WarehouseApp.Domain.Entities.Category", "Category")
-                        .WithMany("MaterialCategories")
+                    b.HasOne("WarehouseApp.MVC.Models.Category", "Category")
+                        .WithMany("Materials")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WarehouseApp.Domain.Entities.Material", "Material")
-                        .WithMany("MaterialCategories")
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Category");
-
-                    b.Navigation("Material");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.RequisitionEmployee", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Requisition", b =>
                 {
-                    b.HasOne("WarehouseApp.Domain.Entities.Employee", "Employee")
-                        .WithMany("RequisitionEmployees")
+                    b.HasOne("WarehouseApp.MVC.Models.Employee", "Employee")
+                        .WithMany("Requisitions")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WarehouseApp.Domain.Entities.Requisition", "Requisition")
-                        .WithMany("RequisitionEmployees")
-                        .HasForeignKey("RequisitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Employee");
-
-                    b.Navigation("Requisition");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.RequisitionMaterial", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.RequisitionMaterial", b =>
                 {
-                    b.HasOne("WarehouseApp.Domain.Entities.Material", "Material")
+                    b.HasOne("WarehouseApp.MVC.Models.Material", "Material")
                         .WithMany("RequisitionMaterials")
                         .HasForeignKey("MaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WarehouseApp.Domain.Entities.Requisition", "Requisition")
+                    b.HasOne("WarehouseApp.MVC.Models.Requisition", "Requisition")
                         .WithMany("RequisitionMaterials")
                         .HasForeignKey("RequisitionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -279,29 +244,28 @@ namespace WarehouseApp.MVC.Migrations
                     b.Navigation("Requisition");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Category", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Category", b =>
                 {
-                    b.Navigation("MaterialCategories");
+                    b.Navigation("Materials");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Employee", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Employee", b =>
                 {
+                    b.Navigation("Login")
+                        .IsRequired();
+
                     b.Navigation("Logins");
 
-                    b.Navigation("RequisitionEmployees");
+                    b.Navigation("Requisitions");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Material", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Material", b =>
                 {
-                    b.Navigation("MaterialCategories");
-
                     b.Navigation("RequisitionMaterials");
                 });
 
-            modelBuilder.Entity("WarehouseApp.Domain.Entities.Requisition", b =>
+            modelBuilder.Entity("WarehouseApp.MVC.Models.Requisition", b =>
                 {
-                    b.Navigation("RequisitionEmployees");
-
                     b.Navigation("RequisitionMaterials");
                 });
 #pragma warning restore 612, 618
