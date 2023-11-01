@@ -5,6 +5,5 @@ namespace WarehouseApp.MVC.Models {
         public int Id { get; set; }
         public string UserLogin { get; set; }
         public string Password { get; set; }
-        public Employee Employee { get; set; }
     }
 }

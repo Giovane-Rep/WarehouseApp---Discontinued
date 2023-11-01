@@ -25,6 +25,10 @@ namespace WarehouseApp.MVC.Repositories {
             return _context.Employees.Where(e => e.Id == employeeId).Select(l => l.Login).FirstOrDefault();
         }
         public bool CreateEmployee(Employee employee) {
+            var login = new Login { UserLogin = employee.Name, Password = "" };
+
+            employee.Login = login;
+
             _context.Employees.Add(employee);
             return Save();
         }

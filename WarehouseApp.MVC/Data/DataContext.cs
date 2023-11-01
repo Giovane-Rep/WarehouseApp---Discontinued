@@ -47,8 +47,8 @@ namespace WarehouseApp.MVC.Data {
             //Relationship between Employee and Login 'One to One'
             modelBuilder.Entity<Employee>()
                 .HasOne(e => e.Login)
-                .WithOne(l => l.Employee)
-                .HasForeignKey<Login>();
+                .WithOne()
+                .HasForeignKey<Employee>(e => e.LoginId);
         }
     }
 }

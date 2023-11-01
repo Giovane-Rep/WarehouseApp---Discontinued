@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using WarehouseApp.MVC.Dto;
 using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Models;
@@ -73,6 +74,35 @@ namespace WarehouseApp.MVC.Controllers {
                 return BadRequest(ModelState);
 
             return Ok(login);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateEmployee([FromBody]EmployeeDto employeeCreate) {
+            if (employeeCreate == null)
+                return BadRequest(ModelState);
+
+            var employees = _employeeRepository.GetEmployees()
+                .Where(e => e.Name.Trim().ToUpper() == employeeCreate.Name.TrimEnd().ToUpper())
+                .FirstOrDefault();
+
+            if (employees != null) {
+                ModelState.AddModelError("", "Employee already exists");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var employeeMap = _mapper.Map<Employee>(employeeCreate);
+
+            if (!_employeeRepository.CreateEmployee(employeeMap)) {
+                ModelState.AddModelError("", "Something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created");
         }
     }
 }

@@ -7,7 +7,6 @@ namespace WarehouseApp.MVC.Interfaces {
         bool LoginExists(int loginId);
         bool UserLoginExists(string userLogin);
         bool UserPasswordExists(string password);
-        bool CreateLogin(Login login);
         bool UpdateLogin(Login login);
         bool DeleteLogin(Login login);
         bool Save();

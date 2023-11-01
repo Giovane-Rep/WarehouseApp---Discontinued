@@ -9,10 +9,12 @@ namespace WarehouseApp.MVC.Controllers {
     [ApiController]
     public class LoginController : Controller {
         private readonly ILoginRepository _loginRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
 
-        public LoginController(ILoginRepository loginRepository, IMapper mapper) {
+        public LoginController(ILoginRepository loginRepository, IEmployeeRepository employeeRepository, IMapper mapper) {
             _loginRepository = loginRepository;
+            _employeeRepository = employeeRepository;
             _mapper = mapper;
         }
 

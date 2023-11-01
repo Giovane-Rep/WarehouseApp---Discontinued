@@ -1,4 +1,5 @@
 ﻿using WarehouseApp.MVC.Data;
+using WarehouseApp.MVC.Dto;
 using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Models;
 
@@ -22,7 +23,7 @@ namespace WarehouseApp.MVC.Repositories {
         public ICollection<Material> GetMaterialsByRequisition(int requisitionId) {
             return _context.RequisitionMaterials.Where(r => r.RequisitionId == requisitionId).Select(m => m.Material).ToList();
         }
-        public bool CreateRequisition(int materialId, Requisition requisition) {
+        public bool CreateRequisition(int employeeId, int materialId, Requisition requisition) {
             var material = _context.Materials.Where(m => m.Id == materialId).FirstOrDefault();
 
             var requisitionMaterial = new RequisitionMaterial {
@@ -31,6 +32,8 @@ namespace WarehouseApp.MVC.Repositories {
             };
 
             _context.Add(requisitionMaterial);
+
+            requisition.EmployeeId = employeeId;
 
             _context.Add(requisition);
 

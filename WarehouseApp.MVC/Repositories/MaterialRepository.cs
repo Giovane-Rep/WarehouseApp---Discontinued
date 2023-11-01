@@ -19,9 +19,7 @@ namespace WarehouseApp.MVC.Repositories {
             return _context.Materials.Where(m => m.Id == materialId).FirstOrDefault();
         }
         public bool CreateMaterial(int categoryId, Material material) {
-            var category = _context.Categories.Where(c => c.Id == categoryId).FirstOrDefault();
-
-            material.CategoryId = category.Id;
+            material.CategoryId = categoryId;
 
             _context.Add(material);
 

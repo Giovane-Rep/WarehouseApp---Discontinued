@@ -9,10 +9,12 @@ namespace WarehouseApp.MVC.Controllers {
     [ApiController]
     public class RequisitionController : Controller {
         private readonly IRequisitionRepository _requisitionRepository;
+        private readonly IMaterialRepository _materialRepository;
         private readonly IMapper _mapper;
 
-        public RequisitionController(IRequisitionRepository requisitionRepository, IMapper mapper) {
+        public RequisitionController(IRequisitionRepository requisitionRepository, IMaterialRepository materialRepository, IMapper mapper) {
             _requisitionRepository = requisitionRepository;
+            _materialRepository = materialRepository;
             _mapper = mapper;
         }
 
@@ -55,6 +57,29 @@ namespace WarehouseApp.MVC.Controllers {
                 return BadRequest(ModelState);
 
             return Ok(materials);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateRequisition([FromQuery]int employeeId, [FromQuery]int material, [FromBody]RequisitionDto requisitionCreate) {
+            if (material == null)
+                return BadRequest(ModelState);
+
+            if (requisitionCreate == null)
+                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var requisitionMap = _mapper.Map<Requisition>(requisitionCreate);
+
+            if (!_requisitionRepository.CreateRequisition(employeeId, material, requisitionMap)) {
+                ModelState.AddModelError("", "Something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Seccessfully created");
         }
     }
 }

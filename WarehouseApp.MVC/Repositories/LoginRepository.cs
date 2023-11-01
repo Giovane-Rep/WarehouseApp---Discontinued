@@ -24,10 +24,6 @@ namespace WarehouseApp.MVC.Repositories {
         public ICollection<Login> GetLogins() {
             return _context.Logins.ToList();
         }
-        public bool CreateLogin(Login login) {
-            _context.Logins.Add(login);
-            return Save();
-        }
         public bool UpdateLogin(Login login) {
             _context.Logins.Update(login);
             return Save();

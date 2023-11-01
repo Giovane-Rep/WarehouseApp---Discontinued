@@ -25,23 +25,6 @@ namespace WarehouseApp.MVC.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Sector = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Delegation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Materials",
                 columns: table => new
                 {
@@ -64,7 +47,25 @@ namespace WarehouseApp.MVC.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Employees",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Sector = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Delegation = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Active = table.Column<bool>(type: "bit", nullable: false),
+                    LoginId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,9 +85,7 @@ namespace WarehouseApp.MVC.Migrations
                         name: "FK_Logins_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -111,7 +110,7 @@ namespace WarehouseApp.MVC.Migrations
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,14 +128,20 @@ namespace WarehouseApp.MVC.Migrations
                         column: x => x.MaterialId,
                         principalTable: "Materials",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_RequisitionMaterials_Requisitions_RequisitionId",
                         column: x => x.RequisitionId,
                         principalTable: "Requisitions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Employees_LoginId",
+                table: "Employees",
+                column: "LoginId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logins_EmployeeId",
@@ -157,13 +162,22 @@ namespace WarehouseApp.MVC.Migrations
                 name: "IX_Requisitions_EmployeeId",
                 table: "Requisitions",
                 column: "EmployeeId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Employees_Logins_LoginId",
+                table: "Employees",
+                column: "LoginId",
+                principalTable: "Logins",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Logins");
+            migrationBuilder.DropForeignKey(
+                name: "FK_Employees_Logins_LoginId",
+                table: "Employees");
 
             migrationBuilder.DropTable(
                 name: "RequisitionMaterials");
@@ -176,6 +190,9 @@ namespace WarehouseApp.MVC.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Logins");
 
             migrationBuilder.DropTable(
                 name: "Employees");

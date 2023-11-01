@@ -9,10 +9,12 @@ namespace WarehouseApp.MVC.Controllers {
     [ApiController]
     public class MaterialController : Controller {
         private readonly IMaterialRepository _materialRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public MaterialController (IMaterialRepository materialRepository, IMapper mapper) {
+        public MaterialController (IMaterialRepository materialRepository, ICategoryRepository categoryRepository, IMapper mapper) {
             _materialRepository = materialRepository;
+            _categoryRepository = categoryRepository;
             _mapper = mapper;
         }
 
@@ -40,6 +42,40 @@ namespace WarehouseApp.MVC.Controllers {
                 return BadRequest(ModelState);
 
             return Ok(material);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreateMaterial([FromQuery]int categoryId,  [FromBody]Material materialCreate) {
+            if (!_categoryRepository.CategoryExists(categoryId)) {
+                ModelState.AddModelError("", "Category Not Found");
+                return StatusCode(404, ModelState);
+            }
+
+            if (materialCreate == null)
+                return BadRequest(ModelState);
+
+            var materials = _materialRepository.GetMaterials()
+                .Where(m => m.Name.Trim().ToUpper() == materialCreate.Name.TrimEnd().ToUpper())
+                .FirstOrDefault();
+
+            if (materials != null) {
+                ModelState.AddModelError("", "Material already exists");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var materialMap = _mapper.Map<Material>(materialCreate);
+
+            if (!_materialRepository.CreateMaterial(categoryId, materialMap)) {
+                ModelState.AddModelError("", "Something went wrong while saving");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successfully created");
         }
     }
 }
