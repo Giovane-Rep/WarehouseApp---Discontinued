@@ -62,8 +62,8 @@ namespace WarehouseApp.MVC.Controllers {
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateRequisition([FromQuery]int employeeId, [FromQuery]int material, [FromBody]RequisitionDto requisitionCreate) {
-            if (material == null)
+        public IActionResult CreateRequisition([FromQuery]int employeeId, [FromQuery]ICollection<Material> materialsOfARequisition, [FromBody]RequisitionDto requisitionCreate) {
+            if (materialsOfARequisition == null)
                 return BadRequest(ModelState);
 
             if (requisitionCreate == null)
@@ -74,7 +74,7 @@ namespace WarehouseApp.MVC.Controllers {
 
             var requisitionMap = _mapper.Map<Requisition>(requisitionCreate);
 
-            if (!_requisitionRepository.CreateRequisition(employeeId, material, requisitionMap)) {
+            if (!_requisitionRepository.CreateRequisition(employeeId, materialsOfARequisition, requisitionMap)) {
                 ModelState.AddModelError("", "Something went wrong while saving");
                 return StatusCode(500, ModelState);
             }
