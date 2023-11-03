@@ -23,13 +23,14 @@ namespace WarehouseApp.MVC.Repositories {
         public ICollection<Material> GetMaterialsByRequisition(int requisitionId) {
             return _context.RequisitionMaterials.Where(r => r.Requisition.Id == requisitionId).Select(m => m.Material).ToList();
         }
-        public void AddMaterialToRequisition(int requisitionId, int materialId) {
+        public void AddMaterialToRequisition(int requisitionId, int quantityRequested,int materialId) {
             var requisition = _context.Requisitions.Find(requisitionId);
             var material = _context.Materials.Find(materialId);
 
             var materialRequisition = new RequisitionMaterial {
                 RequisitionId = requisition.Id,
-                MaterialId = material.Id
+                MaterialId = material.Id,
+                QuantityRequested = quantityRequested
             };
 
             _context.RequisitionMaterials.Add(materialRequisition);

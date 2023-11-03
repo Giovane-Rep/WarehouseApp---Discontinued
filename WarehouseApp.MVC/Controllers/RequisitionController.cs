@@ -9,12 +9,10 @@ namespace WarehouseApp.MVC.Controllers {
     [ApiController]
     public class RequisitionController : Controller {
         private readonly IRequisitionRepository _requisitionRepository;
-        private readonly IMaterialRepository _materialRepository;
         private readonly IMapper _mapper;
 
-        public RequisitionController(IRequisitionRepository requisitionRepository, IMaterialRepository materialRepository, IMapper mapper) {
+        public RequisitionController(IRequisitionRepository requisitionRepository, IMapper mapper) {
             _requisitionRepository = requisitionRepository;
-            _materialRepository = materialRepository;
             _mapper = mapper;
         }
 
@@ -62,7 +60,7 @@ namespace WarehouseApp.MVC.Controllers {
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateRequisition([FromQuery] int employeeId, [FromBody] RequisitionDto requisitionCreate) {
+        public IActionResult CreateRequisition(int employeeId, [FromBody] RequisitionDto requisitionCreate) {
             if (requisitionCreate == null)
                 return BadRequest(ModelState);
 

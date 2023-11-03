@@ -172,9 +172,6 @@ namespace WarehouseApp.MVC.Migrations
                     b.Property<DateTime>("OpeningDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("QuantityRequested")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
@@ -188,6 +185,9 @@ namespace WarehouseApp.MVC.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("MaterialId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuantityRequested")
                         .HasColumnType("int");
 
                     b.HasKey("RequisitionId", "MaterialId");

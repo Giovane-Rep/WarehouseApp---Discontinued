@@ -6,7 +6,7 @@ namespace WarehouseApp.MVC.Interfaces {
         ICollection<Requisition> GetRequisitions();
         Requisition GetRequisition(int requisitionId);
         ICollection<Material> GetMaterialsByRequisition(int requisitionId);
-        void AddMaterialToRequisition(int requisitionId, int materialId);
+        void AddMaterialToRequisition(int requisitionId, int materialId, int quantityRequested);
         void RemoveMaterialOfRequisition(int requisitionId, int materialId);
         bool RequisitionExists(int requisitionId);
         bool CreateRequisition(int employeeId, Requisition requisition);
