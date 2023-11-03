@@ -24,8 +24,11 @@ namespace WarehouseApp.MVC.Repositories {
         public Login GetLoginOfAEmployee(int employeeId) {
             return _context.Employees.Where(e => e.Id == employeeId).Select(l => l.Login).FirstOrDefault();
         }
+        public int GetLoginIdByEmployee(int employeeId) {
+            return _context.Employees.Where(e => e.Id == employeeId).Select(e => e.LoginId).FirstOrDefault();
+        }
         public bool CreateEmployee(Employee employee) {
-            var login = new Login { UserLogin = employee.Name, Password = "" };
+            var login = new Login { UserLogin = employee.Email, Password = "" };
 
             employee.Login = login;
 
@@ -37,6 +40,10 @@ namespace WarehouseApp.MVC.Repositories {
             return Save();
         }
         public bool DeleteEmployee(Employee employee) {
+            var loginEmployee = _context.Logins.Where(e => e.Id == employee.LoginId).FirstOrDefault();
+
+            _context.Logins.Remove(loginEmployee);
+
             _context.Employees.Remove(employee);
             return Save();
         }

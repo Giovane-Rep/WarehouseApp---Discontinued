@@ -6,7 +6,7 @@ namespace WarehouseApp.MVC.Interfaces {
         Material GetMaterial(int materialId);
         bool MaterialExists(int materialId);
         bool CreateMaterial(int categoryId, Material material);
-        bool UpdateMaterial(Material material);
+        bool UpdateMaterial(int categoryId, Material material);
         bool DeleteMaterial(Material material);
         bool Save();
     }

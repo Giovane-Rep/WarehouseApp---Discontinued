@@ -21,21 +21,25 @@ namespace WarehouseApp.MVC.Repositories {
             return _context.Requisitions.ToList();
         }
         public ICollection<Material> GetMaterialsByRequisition(int requisitionId) {
-            return _context.RequisitionMaterials.Where(r => r.RequisitionId == requisitionId).Select(m => m.Material).ToList();
+            return _context.RequisitionMaterials.Where(r => r.Requisition.Id == requisitionId).Select(m => m.Material).ToList();
         }
-        public bool CreateRequisition(int employeeId, ICollection<Material> materialsOfARequisition, Requisition requisition) {
- 
-            var requisitionMaterial = new RequisitionMaterial();
+        public void AddMaterialToRequisition(int requisitionId, int materialId) {
+            var requisition = _context.Requisitions.Find(requisitionId);
+            var material = _context.Materials.Find(materialId);
 
-            foreach (Material item in materialsOfARequisition) {
-                var material = _context.Materials.Where(m => m.Id == item.Id).FirstOrDefault();
+            var materialRequisition = new RequisitionMaterial {
+                RequisitionId = requisition.Id,
+                MaterialId = material.Id
+            };
 
-                requisitionMaterial.Requisition = requisition;
-                requisitionMaterial.Material = material;
+            _context.RequisitionMaterials.Add(materialRequisition);
+        }
+        public void RemoveMaterialOfRequisition(int requisitionId, int materialId) {
+            var materialOfARequisition = _context.RequisitionMaterials.Where(r => r.RequisitionId == requisitionId).FirstOrDefault(m => m.MaterialId == materialId);
 
-                _context.Add(requisitionMaterial);
-            }
-
+            _context.RequisitionMaterials.RemoveRange(materialOfARequisition);
+        }
+        public bool CreateRequisition(int employeeId, Requisition requisition) {
             requisition.EmployeeId = employeeId;
 
             _context.Add(requisition);
@@ -47,6 +51,11 @@ namespace WarehouseApp.MVC.Repositories {
             return Save();
         }
         public bool DeleteRequisition(Requisition requisition) {
+            var requisitionMaterials = _context.RequisitionMaterials.Where(rm => rm.RequisitionId == requisition.Id);
+
+            _context.RequisitionMaterials.RemoveRange(requisitionMaterials);
+            
+
             _context.Remove(requisition);
             return Save();
         }

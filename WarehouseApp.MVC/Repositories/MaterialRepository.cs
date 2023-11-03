@@ -1,4 +1,5 @@
-﻿using WarehouseApp.MVC.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseApp.MVC.Data;
 using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Models;
 
@@ -25,11 +26,17 @@ namespace WarehouseApp.MVC.Repositories {
 
             return Save();
         }
-        public bool UpdateMaterial(Material material) {
+        public bool UpdateMaterial(int categoryId, Material material) {
+            material.CategoryId = categoryId;
+
             _context.Update(material);
             return Save();
         }
         public bool DeleteMaterial(Material material) {
+            var materialsRequisiotions = _context.RequisitionMaterials.Where(rm => rm.MaterialId == material.Id);
+
+            _context.RequisitionMaterials.RemoveRange(materialsRequisiotions);
+                       
             _context.Remove(material);
             return Save();
         }

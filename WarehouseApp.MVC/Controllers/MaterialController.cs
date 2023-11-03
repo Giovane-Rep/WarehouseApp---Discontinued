@@ -47,7 +47,7 @@ namespace WarehouseApp.MVC.Controllers {
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateMaterial([FromQuery]int categoryId,  [FromBody]Material materialCreate) {
+        public IActionResult CreateMaterial(int categoryId,  [FromBody]MaterialDto materialCreate) {
             if (!_categoryRepository.CategoryExists(categoryId)) {
                 ModelState.AddModelError("", "Category Not Found");
                 return StatusCode(404, ModelState);
@@ -76,6 +76,52 @@ namespace WarehouseApp.MVC.Controllers {
             }
 
             return Ok("Successfully created");
+        }
+
+        [HttpPut("{materialId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateMaterial([FromQuery]int categoryId, [FromBody]MaterialDto materialUpdated) {
+            if (materialUpdated == null)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepository.CategoryExists(categoryId)) {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var materialMap = _mapper.Map<Material>(materialUpdated);
+
+            if (!_materialRepository.UpdateMaterial(categoryId, materialMap)) {
+                ModelState.AddModelError("", "Something went wrong while updating");
+                return StatusCode(500, ModelState);
+            }
+            
+            return NoContent();
+        }
+
+        [HttpDelete("{materialId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteMaterial (int materialId) {
+            if (!_materialRepository.MaterialExists(materialId)) 
+                return BadRequest(ModelState);
+          
+            var materialToDelete = _materialRepository.GetMaterial(materialId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_materialRepository.DeleteMaterial(materialToDelete)) {
+                ModelState.AddModelError("", "Something went wrong deleting Material");
+                return StatusCode(500, ModelState);
+            }
+            
+            return NoContent();
         }
     }
 }

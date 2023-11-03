@@ -1,4 +1,5 @@
-﻿using WarehouseApp.MVC.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WarehouseApp.MVC.Data;
 using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Models;
 
@@ -30,6 +31,13 @@ namespace WarehouseApp.MVC.Repositories {
             return Save();
         }
         public bool DeleteCategory(Category category) {
+            var categoryMaterials = _context.Categories.Include(c => c.Materials)
+                .FirstOrDefault(c => c.Id == category.Id);
+
+            _context.Materials.RemoveRange(categoryMaterials.Materials);
+            
+
+
             _context.Remove(category);
             return Save();
         }

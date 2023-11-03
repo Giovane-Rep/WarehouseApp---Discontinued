@@ -45,5 +45,26 @@ namespace WarehouseApp.MVC.Controllers {
 
             return Ok(login);
         }
+
+        [HttpPut("{loginId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateLogin([FromBody]LoginDto loginToUpdate) {
+            if (loginToUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var loginMap = _mapper.Map<Login>(loginToUpdate);
+
+            if (!_loginRepository.UpdateLogin(loginMap)) {
+                ModelState.AddModelError("", "Something went wrong while updating");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }

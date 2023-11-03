@@ -7,5 +7,6 @@
         public DateTime OpeningDate { get; set; }
         public DateTime ClosingDate { get; set; }
         public bool Active { get; set; }
+        public int EmployeeId { get; set; }
     }
 }

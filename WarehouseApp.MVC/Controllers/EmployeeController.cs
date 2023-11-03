@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using WarehouseApp.MVC.Dto;
 using WarehouseApp.MVC.Interfaces;
 using WarehouseApp.MVC.Models;
@@ -10,10 +9,12 @@ namespace WarehouseApp.MVC.Controllers {
     [ApiController]
     public class EmployeeController : Controller {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly ILoginRepository _loginRepository;
         private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IMapper mapper) {
+        public EmployeeController(IEmployeeRepository employeeRepository, ILoginRepository loginRepository, IMapper mapper) {
             _employeeRepository = employeeRepository;
+            _loginRepository = loginRepository;
             _mapper = mapper;
         }
 
@@ -48,7 +49,7 @@ namespace WarehouseApp.MVC.Controllers {
         [ProducesResponseType(200, Type = typeof(IEnumerable<Employee>))]
         [ProducesResponseType(400)]
 
-        public IActionResult GetRequisitionsByEmployee (int employeeId) {
+        public IActionResult GetRequisitionsByEmployee(int employeeId) {
             if (!_employeeRepository.EmployeeExists(employeeId))
                 return NotFound();
 
@@ -79,7 +80,7 @@ namespace WarehouseApp.MVC.Controllers {
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public IActionResult CreateEmployee([FromBody]EmployeeDto employeeCreate) {
+        public IActionResult CreateEmployee([FromBody] EmployeeDto employeeCreate) {
             if (employeeCreate == null)
                 return BadRequest(ModelState);
 
@@ -103,6 +104,58 @@ namespace WarehouseApp.MVC.Controllers {
             }
 
             return Ok("Successfully created");
+        }
+
+        [HttpPut("{employeeId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateEmployee(int employeeId, [FromBody] EmployeeDto employeeToUpdate) {
+            if (employeeToUpdate == null)
+                return BadRequest(ModelState);
+
+            if (employeeId != employeeToUpdate.Id)
+                return BadRequest(ModelState);
+
+            if (!_employeeRepository.EmployeeExists(employeeId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var employeeMap = _mapper.Map<Employee>(employeeToUpdate);
+
+            //Fazer tratamento para que o LoginId inserido seja o mesmo do banco de dados
+            //Também é necessário que ao criar o Employee, garantir que o LoginId da tabela Employees seja o mesmo que o Id da tabela Logins
+            //Uma maneira de fazer isso é atribuir ao LoginId o Id do Employee, assim garantindo que não haverá nenhum LoginId se repetindo no banco
+
+            if (!_employeeRepository.UpdateEmployee(employeeMap)) {
+                ModelState.AddModelError("", "Something went wrong updating Employee");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{employeeId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteEmployee(int employeeId) {
+            if (!_employeeRepository.EmployeeExists(employeeId))
+                return BadRequest(ModelState);
+
+            var employeeToDelete = _employeeRepository.GetEmployee(employeeId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_employeeRepository.DeleteEmployee(employeeToDelete)) {
+                ModelState.AddModelError("", "Something went wrong deleting Employee");
+                return StatusCode(500, ModelState);
+            }
+            
+            return NoContent();
         }
     }
 }

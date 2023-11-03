@@ -87,5 +87,47 @@ namespace WarehouseApp.MVC.Controllers {
 
             return Ok("Successfully created");
         }
+
+        [HttpPut("{categoryId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory([FromBody]CategoryDto categoryToUpdate) {
+            if (categoryToUpdate == null)
+                return BadRequest(ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var categoryMap = _mapper.Map<Category>(categoryToUpdate);
+
+            if (!_categoryRepository.UpdateCategory(categoryMap)) {
+                ModelState.AddModelError("", "Something went wron while updating");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{categoryId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategory(int categoryId) {
+            if (!_categoryRepository.CategoryExists(categoryId)) 
+                return BadRequest(ModelState);
+
+            var categoryToDelete = _categoryRepository.GetCategory(categoryId);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            
+            if (!_categoryRepository.DeleteCategory(categoryToDelete)) {
+                ModelState.AddModelError("", "Something went wrong deleting Category");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }
